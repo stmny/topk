@@ -1,5 +1,9 @@
 package com.zulily.salesorder.config;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.zulily.salesorder.dynamodb.dao.SalesOrderDao;
+import com.zulily.salesorder.model.SalesOrderModelMapper;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -39,4 +43,20 @@ public class DynamoDBConfig {
 	public AWSCredentials amazonAWSCredentials() {
 		return new BasicAWSCredentials(accessKey, secretKey);
 	}
-}
+
+	@Bean
+	DynamoDBMapper dynamoDBMapper(AmazonDynamoDB amazonDynamoDB) {
+		return new DynamoDBMapper(amazonDynamoDB);
+	}
+
+	@Bean
+	SalesOrderModelMapper salesOrderModelMapper() {
+		return new SalesOrderModelMapper();
+	}
+
+	@Bean
+	public SalesOrderDao salesOrderDao(DynamoDBMapper dynamoDBMapper) {
+		SalesOrderDao salesOrderDao = new SalesOrderDao(dynamoDBMapper);
+		return salesOrderDao;
+	}
+	}

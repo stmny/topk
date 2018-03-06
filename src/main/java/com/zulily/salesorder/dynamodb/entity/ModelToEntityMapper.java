@@ -20,7 +20,7 @@ public class ModelToEntityMapper {
         SalesOrderResponse salesOrderResponse = new SalesOrderResponse();
         if(!CollectionUtils.isNullOrEmpty(salesOrderList)) {
             salesOrderResponse.setSalesOrderModelList(salesOrderList.stream()
-                    .map(this::convertToSalesOrderResponse).collect((toList()));
+                    .map(this::convertToSalesOrderResponse).collect((toList())));
         }
         return salesOrderResponse;
     }
