@@ -1,4 +1,4 @@
-package com.zulily.salesorder.dynamodb.entity;
+package com.zulily.salesorder.entity;
 
 import com.amazonaws.util.CollectionUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
