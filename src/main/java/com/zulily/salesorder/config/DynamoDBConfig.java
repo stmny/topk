@@ -1,10 +1,6 @@
 package com.zulily.salesorder.config;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
-import com.zulily.salesorder.dynamodb.dao.SalesOrderDao;
-import com.zulily.salesorder.model.SalesOrderModelMapper;
-import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +12,6 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.util.StringUtils;
 
 @Configuration
-@EnableDynamoDBRepositories(basePackages = "com.zulily.order.topk.dynamodb.dao")
 public class DynamoDBConfig {
 
 	@Value("${amazon.dynamodb.endpoint}")
@@ -49,14 +44,4 @@ public class DynamoDBConfig {
 		return new DynamoDBMapper(amazonDynamoDB);
 	}
 
-	@Bean
-	SalesOrderModelMapper salesOrderModelMapper() {
-		return new SalesOrderModelMapper();
-	}
-
-	@Bean
-	public SalesOrderDao salesOrderDao(DynamoDBMapper dynamoDBMapper) {
-		SalesOrderDao salesOrderDao = new SalesOrderDao(dynamoDBMapper);
-		return salesOrderDao;
-	}
 	}

@@ -1,10 +1,9 @@
-package com.zulily.salesorder.dynamodb.dao;
+package com.zulily.salesorder.dao;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.zulily.salesorder.dynamodb.entity.SalesOrder;
-import org.springframework.stereotype.Repository;
+import com.zulily.salesorder.entity.SalesOrder;
 
 import java.util.HashMap;
 import java.util.List;

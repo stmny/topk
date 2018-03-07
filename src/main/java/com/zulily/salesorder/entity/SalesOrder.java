@@ -1,4 +1,4 @@
-package com.zulily.salesorder.dynamodb.entity;
+package com.zulily.salesorder.entity;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;

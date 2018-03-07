@@ -1,7 +1,7 @@
 package com.zulily.salesorder.model;
 
 import com.amazonaws.util.CollectionUtils;
-import com.zulily.salesorder.dynamodb.entity.SalesOrder;
+import com.zulily.salesorder.entity.SalesOrder;
 
 import java.util.List;
 
