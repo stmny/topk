@@ -1,0 +1,1 @@
+# DynamoDB Stream Lambda function
