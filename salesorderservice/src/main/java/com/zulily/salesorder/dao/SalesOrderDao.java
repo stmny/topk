@@ -27,7 +27,7 @@ public class SalesOrderDao {
         map.put(":" + "customer_id", new AttributeValue().withS(customerId));
         DynamoDBQueryExpression<SalesOrder> queryExpression =
                 new DynamoDBQueryExpression<SalesOrder>()
-                        .withKeyConditionExpression("customer_id =: customer_id")
+                        .withKeyConditionExpression("customer_id = :customer_id")
                         .withExpressionAttributeValues(map);
         salesOrders = dynamoDBMapper.query(SalesOrder.class, queryExpression);
         return salesOrders;
