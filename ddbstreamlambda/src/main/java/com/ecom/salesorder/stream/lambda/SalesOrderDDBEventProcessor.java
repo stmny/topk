@@ -6,14 +6,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.internal.InternalUtils;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.kinesisfirehose.AmazonKinesisFirehose;
-import com.amazonaws.services.kinesisfirehose.AmazonKinesisFirehoseClient;
 import com.amazonaws.services.kinesisfirehose.AmazonKinesisFirehoseClientBuilder;
 import com.amazonaws.services.kinesisfirehose.model.PutRecordBatchRequest;
 import com.amazonaws.services.kinesisfirehose.model.Record;
@@ -33,7 +29,7 @@ public class SalesOrderDDBEventProcessor implements
 
 
     public String handleRequest(DynamodbEvent ddbEvent, Context context) {
-        AmazonKinesisFirehose firehoseClient = AmazonKinesisFirehoseClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(amazonAWSCredentials())).build();
+        AmazonKinesisFirehose firehoseClient = AmazonKinesisFirehoseClientBuilder.standard().build();
         List<Item> listOfItem = new ArrayList<>();
             List<Map<String, AttributeValue>> listOfMaps = null;
             for (DynamodbEvent.DynamodbStreamRecord record : ddbEvent.getRecords()) {
@@ -70,7 +66,5 @@ public class SalesOrderDDBEventProcessor implements
         return records;
     }
 
-    public AWSCredentials amazonAWSCredentials() {
-        return new BasicAWSCredentials(ACCESSKEY, SECRETKEY);
-    }
+
 }
