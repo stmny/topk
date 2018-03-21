@@ -23,7 +23,7 @@ public class SalesOrderDDBEventProcessor implements
 
     private static final String MODIFY = "MODIFY";
 
-    private static final String DELIVERY_STREAM_NAME = "";
+    private static final String DELIVERY_STREAM_NAME = "ddb-stream-to-s3";
     private static final String ACCESSKEY = "accesskey";
     private static final String SECRETKEY = "secretkey";
 

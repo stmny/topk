@@ -14,12 +14,6 @@
     <dependencies>
         <dependency>
             <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
-            <version>1.11.297</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-core</artifactId>
             <version>1.2.0</version>
         </dependency>
@@ -27,11 +21,102 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-events</artifactId>
             <version>2.0.2</version>
-        </dependency>
+         </dependency>
        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>amazon-kinesis-client</artifactId>
             <version>1.0.0</version>
+           <exclusions>
+               <exclusion>
+                   <artifactId>commons-codec</artifactId>
+                   <groupId>commons-codec</groupId>
+               </exclusion>
+
+               <exclusion>
+                   <artifactId>ion-java</artifactId>
+                   <groupId>software.amazon.ion</groupId>
+               </exclusion>
+
+
+               <exclusion>
+                   <artifactId>jmespath-java</artifactId>
+                   <groupId>com.amazonaws</groupId>
+               </exclusion>
+               <exclusion>
+                   <artifactId>guava</artifactId>
+                   <groupId>com.google.guava</groupId>
+               </exclusion>
+               <exclusion>
+                   <artifactId>commons-lang</artifactId>
+                   <groupId>commons-lang</groupId>
+               </exclusion>
+               <exclusion>
+                   <artifactId>protobuf-java</artifactId>
+                   <groupId>com.google.protobuf</groupId>
+               </exclusion>
+               <exclusion>
+                   <artifactId>aws-java-sdk-kms</artifactId>
+                   <groupId>com.amazonaws</groupId>
+               </exclusion>
+               <exclusion>
+                   <artifactId>aws-java-sdk-s3</artifactId>
+                   <groupId>com.amazonaws</groupId>
+               </exclusion>
+               <exclusion>
+                   <artifactId>aws-java-sdk-cloudwatch</artifactId>
+                   <groupId>com.amazonaws</groupId>
+               </exclusion>
+           </exclusions>
+       </dependency>
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/amazon-kinesis-client -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>amazon-kinesis-client</artifactId>
+            <version>1.9.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-codec</artifactId>
+                    <groupId>commons-codec</groupId>
+                </exclusion>
+
+
+                <exclusion>
+                    <artifactId>ion-java</artifactId>
+                    <groupId>software.amazon.ion</groupId>
+                </exclusion>
+
+                <exclusion>
+                    <artifactId>jmespath-java</artifactId>
+                    <groupId>com.amazonaws</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-lang</artifactId>
+                    <groupId>commons-lang</groupId>
+                </exclusion>
+
+                <exclusion>
+                    <artifactId>protobuf-java</artifactId>
+                    <groupId>com.google.protobuf</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>aws-java-sdk-kms</artifactId>
+                    <groupId>com.amazonaws</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>aws-java-sdk-s3</artifactId>
+                    <groupId>com.amazonaws</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>aws-java-sdk-cloudwatch</artifactId>
+                    <groupId>com.amazonaws</groupId>
+                </exclusion>
+
+            </exclusions>
+
         </dependency>
 
     </dependencies>
