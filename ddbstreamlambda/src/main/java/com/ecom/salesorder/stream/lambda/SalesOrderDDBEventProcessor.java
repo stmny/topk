@@ -1,24 +1,28 @@
 package com.ecom.salesorder.stream.lambda;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.internal.InternalUtils;
+import com.amazonaws.services.dynamodbv2.document.ItemUtils;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.kinesisfirehose.AmazonKinesisFirehose;
 import com.amazonaws.services.kinesisfirehose.AmazonKinesisFirehoseClientBuilder;
 import com.amazonaws.services.kinesisfirehose.model.PutRecordBatchRequest;
 import com.amazonaws.services.kinesisfirehose.model.Record;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class SalesOrderDDBEventProcessor implements
         RequestHandler<DynamodbEvent, String> {
+
+
     private static final String INSERT = "INSERT";
 
     private static final String MODIFY = "MODIFY";
@@ -29,24 +33,26 @@ public class SalesOrderDDBEventProcessor implements
 
 
     public String handleRequest(DynamodbEvent ddbEvent, Context context) {
+        LambdaLogger logger = context.getLogger();
         AmazonKinesisFirehose firehoseClient = AmazonKinesisFirehoseClientBuilder.standard().build();
         List<Item> listOfItem = new ArrayList<>();
-            List<Map<String, AttributeValue>> listOfMaps = null;
-            for (DynamodbEvent.DynamodbStreamRecord record : ddbEvent.getRecords()) {
+        List<Map<String, AttributeValue>> listOfMaps = null;
+        for (DynamodbEvent.DynamodbStreamRecord record : ddbEvent.getRecords()) {
 
-                if (INSERT.equals(record.getEventName()) || MODIFY.equals(record.getEventName())) {
-                    listOfMaps = new ArrayList<Map<String, AttributeValue>>();
-                    listOfMaps.add(record.getDynamodb().getNewImage());
-                    listOfItem = InternalUtils.toItemList(listOfMaps);
-                }
+            if (INSERT.equals(record.getEventName()) || MODIFY.equals(record.getEventName())) {
+                listOfMaps = new ArrayList<Map<String, AttributeValue>>();
+                listOfMaps.add(record.getDynamodb().getNewImage());
+                listOfItem = ItemUtils.toItemList(listOfMaps);
             }
+        }
+        logger.log("listOfItem: " + listOfItem.toString());
         PutRecordBatchRequest putRecordBatchRequest = new PutRecordBatchRequest();
         putRecordBatchRequest.setDeliveryStreamName(DELIVERY_STREAM_NAME);
         List<Record>  recordList = null;
         try {
             recordList = convert(listOfItem);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("SalesOrderDDBEventProcessor handle request exception: "+ e.getMessage());
         }
         putRecordBatchRequest.setRecords(recordList);
 
@@ -61,6 +67,11 @@ public class SalesOrderDDBEventProcessor implements
     private List<Record> convert(List<Item> listOfItem) throws Exception  {
         List<Record> records = new ArrayList<>();
         for(Item item : listOfItem) {
+            String update_at = item.getString("update_at");
+            item.withStringSet("update_at_year",update_at.substring(0,4));
+            item.withStringSet("update_at_month",update_at.substring(5,7));
+            item.withStringSet("update_at_day",update_at.substring(8,10));
+            System.out.println("item = " + item.toString());
             records.add(new Record().withData(ByteBuffer.wrap(item.toJSON().toString().getBytes("utf-8"))));
         }
         return records;
