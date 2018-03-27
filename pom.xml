@@ -9,7 +9,7 @@
 	<modules>
 		<module>salesorderservice</module>
 		<module>ddbstreamlambda</module>
-		<module>topkstats</module>
+		<module>topkstatslambda</module>
 	</modules>
 	<packaging>pom</packaging>
 
