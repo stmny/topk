@@ -1,128 +1,107 @@
 package com.ecom.topk.stats;
 
-import java.util.HashMap;
-import java.util.Map;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Formatter;
-import java.util.Properties;
 
 public class AthenaLambda implements RequestHandler<AthenaRequest, Object> {
-        private Map<String, String> regionMap = new HashMap();
-
-        public AthenaLambda() {
-            this.regionMap.put("us-west-2", "us-west-2");
-        }
-
-        public Object handleRequest(AthenaRequest input, Context context) {
-            Connection conn = null;
-            Statement statement = null;
-            StringBuilder columnSb = null;
-
-            LambdaLogger logger = context.getLogger();
-
-            boolean valid = isRequiredValid(input);
-
-            Formatter formatter = new Formatter();
-            String athenaUrl = formatter.format("jdbc:awsathena://athena.%s.amazonaws.com:443", input.region).toString();
-            logger.log("Access to :" + athenaUrl + "\n");
-
-            if (!valid) {
-                return "Input parameters are not enough. input: " + input;
-            }
-
-            try {
-                Class.forName("com.amazonaws.athena.jdbc.AthenaDriver");
-                Properties info = new Properties();
-                if (StringUtils.isBlank(input.s3Path)) {
-                    info.put("s3_staging_dir", "s3://");
-                } else {
-                    info.put("s3_staging_dir", input.s3Path);
-                }
-                info.put("aws_credentials_provider_class", "com.amazonaws.auth.PropertiesFileCredentialsProvider");
-
-                // Put credential information.
-                info.put("aws_credentials_provider_arguments", "config/credential");
-
-                conn = DriverManager.getConnection(athenaUrl, info);
-
-                statement = conn.createStatement();
-                ResultSet rs = statement.executeQuery(input.sql);
-
-                String[] columnArray = input.columnListStr.split(",");
-                columnSb = new StringBuilder();
-                columnSb.append(input.columnListStr).append(System.getProperty("line.separator"));
-
-                while (rs.next()) {
-                    int length = columnSb.length();
-
-                    //Retrieve table column.
-                    for (String column : columnArray) {
-                        if (StringUtils.isBlank(column)) {
-                            continue;
-                        }
-                        columnSb.append(",").append(rs.getString(column.trim()));
-                    }
-                    columnSb.delete(length, length + 1);
-                    columnSb.append(System.getProperty("line.separator"));
-                }
-                rs.close();
-                conn.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-
-                return "Exception happened, aborted.";
-            } finally {
-                try {
-                    if (statement != null)
-                        statement.close();
-                } catch (Exception ex) {
-
-                }
-                try {
-                    if (conn != null)
-                        conn.close();
-                } catch (Exception ex) {
-
-                    ex.printStackTrace();
-                }
-            }
-
-            String result = "Input parameter:" + input.toString() + "\n\nresult:\n" + columnSb.toString();
-            logger.log("Finished connecting to Athena.\n");
-
-            logger.log(result);
-
-            return result;
-        }
-
-
-        private boolean isRequiredValid(AthenaRequest request) {
-            if (request == null) {
-                return false;
-            }
-
-            if (StringUtils.isBlank(request.s3Path)) {
-                return false;
-            }
-
-            if (StringUtils.isBlank(request.sql)) {
-                return false;
-            }
-
-            if (StringUtils.isBlank(request.columnListStr)) {
-                return false;
-            }
-
-            return true;
-        }
-
+    public AthenaLambda() {
     }
+
+    public Object handleRequest(AthenaRequest input, Context context) {
+        LambdaLogger logger = context.getLogger();
+        AthenaDBConfig athenaDBConfig = null;
+        try {
+            athenaDBConfig = new AthenaDBConfig();
+        } catch (IOException e) {
+            logger.log("config file error " + e.getMessage());
+        }
+        Statement statement = null;
+        logger.log(input.toString());
+
+        boolean valid = isRequiredValid(input);
+
+        if (!valid) {
+            return "Input parameters are not valid. input: " + input;
+        }
+        Connection conn = null;
+        JSONArray result = null;
+        try {
+            conn = athenaDBConfig.getConnection();
+            statement = conn.createStatement();
+            String sql = athenaDBConfig.generateStatement(input.startDate, input.endDate, input.count);
+            ResultSet rs = statement.executeQuery(sql);
+            convertToJSON(rs);
+            rs.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "Query Data  exception";
+        } finally {
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (Exception ex) {
+
+            }
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (Exception ex) {
+
+                ex.printStackTrace();
+            }
+        }
+
+        logger.log("Finished connecting to Athena.\n");
+
+        logger.log(result.toString());
+
+        return result;
+    }
+
+    private JSONArray convertToJSON(ResultSet resultSet)
+            throws Exception {
+        JSONArray jsonArray = new JSONArray();
+        while (resultSet.next()) {
+            int total_rows = resultSet.getMetaData().getColumnCount();
+            for (int i = 0; i < total_rows; i++) {
+                JSONObject obj = new JSONObject();
+                obj.put(resultSet.getMetaData().getColumnLabel(i + 1)
+                        .toLowerCase(), resultSet.getObject(i + 1));
+                jsonArray.put(obj);
+            }
+        }
+        return jsonArray;
+    }
+
+    private boolean isRequiredValid(AthenaRequest request) {
+
+        if (request == null) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(request.startDate)) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(request.endDate)) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(request.count)) {
+            return false;
+        }
+
+        return true;
+    }
+
+}
 

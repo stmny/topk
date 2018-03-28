@@ -8,19 +8,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class AthenaRequest {
     @Getter
     @Setter
-    public String region;
+    public String startDate;
 
     @Getter
     @Setter
-    public String s3Path;
+    public String endDate;
 
     @Getter
     @Setter
-    public String sql;
+    public String count;
 
-    @Getter
-    @Setter
-    public String columnListStr;
 
     @Override
     public String toString() {

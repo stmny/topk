@@ -1,0 +1,44 @@
+package com.ecom.topk.stats;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.Formatter;
+import java.util.Properties;
+
+public class AthenaDBConfig {
+
+     String region;
+     String url;
+     String  dbName;
+     String tableName;
+     public AthenaDBConfig() throws IOException {
+         InputStream is = AthenaDBConfig.class.getResourceAsStream("/athena.properties");
+         Properties properties = new Properties();
+         properties.load(is);
+         region = properties.getProperty("region");
+         Formatter formatter = new Formatter();
+         url =  formatter.format("jdbc:awsathena://athena.%s.amazonaws.com:443", region).toString();
+         dbName = properties.getProperty("database");
+         tableName = properties.getProperty("table");
+     }
+
+     public Connection getConnection() throws Exception {
+         Connection conn = null;
+         Class.forName("com.amazonaws.athena.jdbc.AthenaDriver");
+         Properties info = new Properties();
+         info.put("aws_credentials_provider_class", "com.amazonaws.auth.PropertiesFileCredentialsProvider");
+         info.put("aws_credentials_provider_arguments", "config/credential");
+
+         conn = DriverManager.getConnection(url, info);
+         return conn;
+     }
+     public  String generateStatement(String startDate, String endDate, String k) {
+         Formatter formatter = new Formatter();
+         String sql = formatter.format("select product, sum(count) as total from %s.%s where update_at <= %s " +
+                 "AND update_at >= %s GRORP BY product limit %n", dbName,tableName,endDate,startDate,k).toString();
+         return sql;
+     }
+}
+
