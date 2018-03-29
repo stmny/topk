@@ -13,8 +13,8 @@
 	</modules>
 	<packaging>pom</packaging>
 
-	<name>EcomTopKOrdersDynamoDB</name>
-	<description>Spring data for  orders top k - DynamoDB</description>
+	<name>zulilytopk</name>
+	<description>DynamoDB kinesis stream lambda apigateway ahtena spring restfuyo</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
