@@ -11,8 +11,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -28,8 +26,6 @@ public class SalesOrderDDBEventProcessor implements
     private static final String MODIFY = "MODIFY";
 
     private static final String DELIVERY_STREAM_NAME = "ddb-stream-to-s3";
-    private static final String ACCESSKEY = "accesskey";
-    private static final String SECRETKEY = "secretkey";
 
 
     public String handleRequest(DynamodbEvent ddbEvent, Context context) {
