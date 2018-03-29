@@ -10,13 +10,14 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 
-public class AthenaLambda implements RequestHandler<AthenaRequest, Object> {
+public class AthenaLambda implements RequestHandler<AthenaRequest, String> {
     public AthenaLambda() {
     }
 
-    public Object handleRequest(AthenaRequest input, Context context) {
+    public String handleRequest(AthenaRequest input, Context context) {
         LambdaLogger logger = context.getLogger();
         AthenaDBConfig athenaDBConfig = null;
         try {
@@ -33,15 +34,17 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, Object> {
             return "Input parameters are not valid. input: " + input;
         }
         Connection conn = null;
-        JSONArray result = null;
+        JSONArray list = null;
         try {
             conn = athenaDBConfig.getConnection();
             statement = conn.createStatement();
             String sql = athenaDBConfig.generateStatement(input.startDate, input.endDate, input.count);
+            logger.log(sql);
             ResultSet rs = statement.executeQuery(sql);
-            convertToJSON(rs);
+            list = convertToJSON(rs);
             rs.close();
         } catch (Exception ex) {
+            logger.log("query exceptoin " + ex.getMessage());
             ex.printStackTrace();
             return "Query Data  exception";
         } finally {
@@ -60,26 +63,36 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, Object> {
             }
         }
 
-        logger.log("Finished connecting to Athena.\n");
 
-        logger.log(result.toString());
+        if(list == null) {
+            logger.log("No data return");
+            return  "No data return";
+        }
+        JSONObject result =  new JSONObject();
+        result.put("result",list);
+        return result.toString();
 
-        return result;
     }
 
     private JSONArray convertToJSON(ResultSet resultSet)
             throws Exception {
-        JSONArray jsonArray = new JSONArray();
-        while (resultSet.next()) {
-            int total_rows = resultSet.getMetaData().getColumnCount();
-            for (int i = 0; i < total_rows; i++) {
-                JSONObject obj = new JSONObject();
-                obj.put(resultSet.getMetaData().getColumnLabel(i + 1)
-                        .toLowerCase(), resultSet.getObject(i + 1));
-                jsonArray.put(obj);
+        JSONArray json = new JSONArray();
+        ResultSetMetaData rsmd = resultSet.getMetaData();
+        while(resultSet.next()) {
+            int numColumns = rsmd.getColumnCount();
+            JSONObject obj = new JSONObject();
+            for (int i=1; i<=numColumns; i++) {
+                String column_name = rsmd.getColumnName(i);
+                Object value = resultSet.getObject(column_name);
+                System.out.println(value);
+                if( value != null) {
+                    obj.put(column_name, resultSet.getObject(column_name));
+                }
             }
+
+            json.put(obj);
         }
-        return jsonArray;
+        return json;
     }
 
     private boolean isRequiredValid(AthenaRequest request) {

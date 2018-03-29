@@ -38,8 +38,8 @@ public class AthenaDBConfig {
      }
      public  String generateStatement(String startDate, String endDate, String k) {
          Formatter formatter = new Formatter();
-         String sql = formatter.format("select product, sum(count) as total from %s.%s where update_at <= %s " +
-                 "AND update_at >= %s GRORP BY product limit %n", dbName,tableName,endDate,startDate,k).toString();
+         String sql = formatter.format("select product, sum(count) as total from %s.%s where update_at between '%s' AND '%s' " +
+                 "AND product is not null GROUP BY product limit %s", dbName,tableName,startDate,endDate,k).toString();
          return sql;
      }
 }
