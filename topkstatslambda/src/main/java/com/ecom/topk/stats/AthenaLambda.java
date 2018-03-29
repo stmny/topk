@@ -38,7 +38,7 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, String> {
         try {
             conn = athenaDBConfig.getConnection();
             statement = conn.createStatement();
-            String sql = athenaDBConfig.generateStatement(input.startDate, input.endDate, input.count);
+            String sql = athenaDBConfig.generateStatement(input.startDate, input.endDate, input.quantity);
             logger.log(sql);
             ResultSet rs = statement.executeQuery(sql);
             list = convertToJSON(rs);
@@ -109,7 +109,7 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, String> {
             return false;
         }
 
-        if (StringUtils.isBlank(request.count)) {
+        if (StringUtils.isBlank(request.quantity)) {
             return false;
         }
 

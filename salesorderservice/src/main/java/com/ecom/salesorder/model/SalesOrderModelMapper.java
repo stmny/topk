@@ -21,11 +21,11 @@ public class SalesOrderModelMapper {
     }
     private SalesOrderModel convertToSalesOrderResponse(SalesOrder salesOrder)  {
         SalesOrderModel salesOrderModel = new SalesOrderModel(
-                salesOrder.getCustomer_id(),
+                salesOrder.getOrder_id(),
                 salesOrder.getUpdated_at(),
                 salesOrder.getProduct(),
                 salesOrder.getCreated_at(),
-                salesOrder.getCount()
+                salesOrder.getQuantity()
         );
         return salesOrderModel;
     }

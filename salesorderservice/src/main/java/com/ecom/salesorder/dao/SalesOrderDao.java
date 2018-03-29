@@ -21,13 +21,13 @@ public class SalesOrderDao {
         dynamoDBMapper.save(salesOrder);
     }
 
-    public List<SalesOrder> getSalesOrdersByCustomerId(String customerId) {
+    public List<SalesOrder> getSalesOrdersByOrderId(String orderId) {
         List<SalesOrder> salesOrders = null;
         Map<String, AttributeValue> map = new HashMap<>();
-        map.put(":" + "customer_id", new AttributeValue().withS(customerId));
+        map.put(":" + "order_id", new AttributeValue().withS(orderId));
         DynamoDBQueryExpression<SalesOrder> queryExpression =
                 new DynamoDBQueryExpression<SalesOrder>()
-                        .withKeyConditionExpression("customer_id = :customer_id")
+                        .withKeyConditionExpression("order_id = :order_id")
                         .withExpressionAttributeValues(map);
         salesOrders = dynamoDBMapper.query(SalesOrder.class, queryExpression);
         return salesOrders;

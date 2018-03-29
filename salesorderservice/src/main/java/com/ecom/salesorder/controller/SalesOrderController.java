@@ -34,19 +34,19 @@ public class SalesOrderController {
 	   SalesOrder salesOrder = new SalesOrder();
        SalesOrderModel salesOrderModel = salesOrderReqest.getSalesOrderModel();
 	   salesOrder.setProduct(salesOrderModel.getProduct());
-	   salesOrder.setCustomer_id(salesOrderModel.getCustomer_id());
+	   salesOrder.setOrder_id(salesOrderModel.getOrder_id());
 	   salesOrder.setUpdated_at(salesOrderModel.getUpdated_at());
 	   salesOrder.setCreated_at(salesOrderModel.getCreated_at());
-	   salesOrder.setCount(salesOrderModel.getCount());
+	   salesOrder.setQuantity(salesOrderModel.getQuantity());
 	   return salesOrder;
     }
 
 
-    @GetMapping(value = "{customerid}/salesorder")
+    @GetMapping(value = "{orderid}/salesorder")
 	@ResponseStatus(value = HttpStatus.OK)
-	public SalesOrderResponse getSalesOrderByCustomerId(@PathVariable("customerid") String customerId) {
+	public SalesOrderResponse getSalesOrderByOrderId(@PathVariable("orderid") String orderId) {
 
-        List<SalesOrder> salesOrders = salesOrderService.getSalesOrdersByCustomerId(customerId);
+        List<SalesOrder> salesOrders = salesOrderService.getSalesOrdersByOrderId(orderId);
 		SalesOrderResponse salesOrderResponse = convertToSalesOrderResponse(salesOrders);
 		return salesOrderResponse;
 	}
@@ -61,11 +61,11 @@ public class SalesOrderController {
 	}
 	private SalesOrderModel convertToSalesOrderResponse(SalesOrder salesOrder)  {
 		SalesOrderModel salesOrderModel = new SalesOrderModel(
-				salesOrder.getCustomer_id(),
+				salesOrder.getOrder_id(),
 				salesOrder.getUpdated_at(),
 				salesOrder.getProduct(),
 				salesOrder.getCreated_at(),
-				salesOrder.getCount()
+				salesOrder.getQuantity()
 		);
 		return salesOrderModel;
 	}

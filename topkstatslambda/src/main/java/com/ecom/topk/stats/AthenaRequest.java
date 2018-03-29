@@ -16,7 +16,7 @@ public class AthenaRequest {
 
     @Getter
     @Setter
-    public String count;
+    public String quantity;
 
 
     @Override

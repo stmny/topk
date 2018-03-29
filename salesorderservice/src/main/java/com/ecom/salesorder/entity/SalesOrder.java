@@ -11,8 +11,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 @DynamoDBTable(tableName = "SalesOrder")
 public class SalesOrder {
 
-	@DynamoDBHashKey(attributeName = "customer_id")
-	private String customer_id;
+	@DynamoDBHashKey(attributeName = "order_id")
+	private String order_id;
 
 	@DynamoDBRangeKey(attributeName = "updated_-at")
 	private String updated_at;
@@ -24,15 +24,15 @@ public class SalesOrder {
 	private String created_at;
 
 
-	@DynamoDBAttribute(attributeName = "count")
-	private int count;
+	@DynamoDBAttribute(attributeName = "quantity")
+	private int quantity;
 
-	public String getCustomer_id() {
-		return customer_id;
+	public String getOrder_id() {
+		return order_id;
 	}
 
-	public void setCustomer_id(String customer_id) {
-		this.customer_id = customer_id;
+	public void setOrder_id(String order_id) {
+		this.order_id = order_id;
 	}
 
 	public String getUpdated_at() {
@@ -59,11 +59,11 @@ public class SalesOrder {
 		this.created_at = created_at;
 	}
 
-	public int getCount() {
-		return count;
+	public int getQuantity() {
+		return quantity;
 	}
 
-	public void setCount(int count) {
-		this.count = count;
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
 	}
 }

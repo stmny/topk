@@ -14,8 +14,8 @@ public class SalesOrderService {
     public SalesOrderService(SalesOrderDao salesOrderDao) {
         this.salesOrderDao = salesOrderDao;
     }
-    public List<SalesOrder> getSalesOrdersByCustomerId(String customerId) {
-        return  salesOrderDao.getSalesOrdersByCustomerId(customerId);
+    public List<SalesOrder> getSalesOrdersByOrderId(String orderId) {
+        return  salesOrderDao.getSalesOrdersByOrderId(orderId);
     }
 
     public void save(SalesOrder salesOrder) {

@@ -34,34 +34,34 @@ public class SalesControllerTest {
         MockitoAnnotations.initMocks(this);
         salesOrderController = new SalesOrderController(salesOrderService);
         salesOrder = new SalesOrder();
-        salesOrder.setCount(new Random().nextInt(1000));
+        salesOrder.setQuantity(new Random().nextInt(1000));
         LocalDateTime date = LocalDateTime.now();
         DateTimeZone tz = DateTimeZone.getDefault();
         LocalDateTime createday = date.minusDays(60);
         salesOrder.setCreated_at(createday.toDateTime(tz).toString());
         salesOrder.setUpdated_at(date.toDateTime(tz).toString());
-        salesOrder.setCustomer_id("customer_"+ UUID.randomUUID());
+        salesOrder.setOrder_id("order_"+ UUID.randomUUID());
         salesOrder.setProduct("Product_"+ new Random().nextInt(10));
 
-        salesOrderModel = new SalesOrderModel(salesOrder.getCustomer_id(), salesOrder.getUpdated_at(),
-                salesOrder.getProduct(),salesOrder.getCreated_at(), salesOrder.getCount());
+        salesOrderModel = new SalesOrderModel(salesOrder.getOrder_id(), salesOrder.getUpdated_at(),
+                salesOrder.getProduct(),salesOrder.getCreated_at(), salesOrder.getQuantity());
 
     }
     @Test
-    public void getSalesOrderByCustomerIdTest() {
+    public void getSalesOrderByOrderIdTest() {
         List<SalesOrder> salesOrders = new ArrayList<>();
         salesOrders.add(salesOrder);
-        when(salesOrderService.getSalesOrdersByCustomerId(salesOrder.getCustomer_id()))
+        when(salesOrderService.getSalesOrdersByOrderId(salesOrder.getOrder_id()))
                 .thenReturn(salesOrders);
-        SalesOrderResponse response = salesOrderController.getSalesOrderByCustomerId(salesOrder.getCustomer_id());
-        assertThat(response.getSalesOrderModelList().get(0).getCount() == salesOrder.getCount());
-        assertThat(response.getSalesOrderModelList().get(0).getCustomer_id().equals(salesOrder.getCustomer_id()));
+        SalesOrderResponse response = salesOrderController.getSalesOrderByOrderId(salesOrder.getOrder_id());
+        assertThat(response.getSalesOrderModelList().get(0).getQuantity() == salesOrder.getQuantity());
+        assertThat(response.getSalesOrderModelList().get(0).getOrder_id().equals(salesOrder.getOrder_id()));
     }
     @Test
     public void saveSalesOrderTest() {
         SalesOrderReqest salesOrderReqest = new SalesOrderReqest();
         salesOrderReqest.setSalesOrderModel(salesOrderModel);
         salesOrderController.saveSalesOrder(salesOrderReqest);
-        assertThat(salesOrder.getCount() == salesOrderModel.getCount());
+        assertThat(salesOrder.getQuantity() == salesOrderModel.getQuantity());
     }
 }
