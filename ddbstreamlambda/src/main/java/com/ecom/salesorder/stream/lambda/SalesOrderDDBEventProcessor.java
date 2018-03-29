@@ -67,7 +67,6 @@ public class SalesOrderDDBEventProcessor implements
     private List<Record> convert(List<Item> listOfItem) throws Exception  {
         List<Record> records = new ArrayList<>();
         for(Item item : listOfItem) {
-            String update_at = item.getString("update_at");
             System.out.println("item = " + item.toString());
             records.add(new Record().withData(ByteBuffer.wrap(item.toJSON().toString().getBytes("utf-8"))));
         }
