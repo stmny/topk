@@ -13,6 +13,7 @@ public class AthenaDBConfig {
      String url;
      String  dbName;
      String tableName;
+     String s3_staging_dir;
      public AthenaDBConfig() throws IOException {
          InputStream is = AthenaDBConfig.class.getResourceAsStream("/athena.properties");
          Properties properties = new Properties();
@@ -22,6 +23,7 @@ public class AthenaDBConfig {
          url =  formatter.format("jdbc:awsathena://athena.%s.amazonaws.com:443", region).toString();
          dbName = properties.getProperty("database");
          tableName = properties.getProperty("table");
+         s3_staging_dir = properties.getProperty("s3_staging_dir");
      }
 
      public Connection getConnection() throws Exception {
@@ -30,7 +32,7 @@ public class AthenaDBConfig {
          Properties info = new Properties();
          info.put("aws_credentials_provider_class", "com.amazonaws.auth.PropertiesFileCredentialsProvider");
          info.put("aws_credentials_provider_arguments", "config/credential");
-
+         info.put("s3_staging_dir",s3_staging_dir);
          conn = DriverManager.getConnection(url, info);
          return conn;
      }
