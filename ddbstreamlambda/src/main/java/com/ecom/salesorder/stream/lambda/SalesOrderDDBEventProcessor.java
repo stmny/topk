@@ -25,7 +25,7 @@ public class SalesOrderDDBEventProcessor implements
 
     private static final String MODIFY = "MODIFY";
 
-    private static final String DELIVERY_STREAM_NAME = "ddb-stream-to-s3";
+    private static final String DELIVERY_STREAM_NAME = "salesorder_stream";
 
 
     public String handleRequest(DynamodbEvent ddbEvent, Context context) {
@@ -33,8 +33,9 @@ public class SalesOrderDDBEventProcessor implements
         AmazonKinesisFirehose firehoseClient = AmazonKinesisFirehoseClientBuilder.standard().build();
         List<Item> listOfItem = new ArrayList<>();
         List<Map<String, AttributeValue>> listOfMaps = null;
+        logger.log(" processed " + ddbEvent.getRecords().size() + " records. ");
         for (DynamodbEvent.DynamodbStreamRecord record : ddbEvent.getRecords()) {
-
+            logger.log(record.toString());
             if (INSERT.equals(record.getEventName()) || MODIFY.equals(record.getEventName())) {
                 listOfMaps = new ArrayList<Map<String, AttributeValue>>();
                 listOfMaps.add(record.getDynamodb().getNewImage());
