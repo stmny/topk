@@ -1,4 +1,4 @@
-package com.ecom.topk.stats;
+package com.ecom.topk.stats.domain;
 
 import lombok.Getter;
 import lombok.Setter;

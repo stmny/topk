@@ -1,8 +1,12 @@
-package com.ecom.topk.stats;
+package com.ecom.topk.stats.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.ecom.topk.stats.domain.AthenaRequest;
+import com.ecom.topk.stats.domain.AthenaResponse;
+import com.ecom.topk.stats.config.AthenaDBConfig;
+import com.ecom.topk.stats.domain.ProductSum;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,18 +16,25 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-public class AthenaLambda implements RequestHandler<AthenaRequest, String> {
+public class AthenaLambda implements RequestHandler<AthenaRequest, AthenaResponse> {
+    private ProductSum productSum;
+
     public AthenaLambda() {
     }
 
-    public String handleRequest(AthenaRequest input, Context context) {
+    public AthenaResponse handleRequest(AthenaRequest input, Context context) {
         LambdaLogger logger = context.getLogger();
         AthenaDBConfig athenaDBConfig = null;
+        AthenaResponse athenaResponse = new AthenaResponse();
         try {
             athenaDBConfig = new AthenaDBConfig();
         } catch (IOException e) {
             logger.log("config file error " + e.getMessage());
+            athenaResponse.status = "DBConnection Error";
+            return  athenaResponse;
         }
         Statement statement = null;
         logger.log(input.toString());
@@ -31,10 +42,11 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, String> {
         boolean valid = isRequiredValid(input);
 
         if (!valid) {
-            return "Input parameters are not valid. input: " + input;
+            athenaResponse.status =  "Input parameters are not valid. input: " + input;
+            return athenaResponse;
         }
         Connection conn = null;
-        JSONArray list = null;
+        List<ProductSum> list = null;
         try {
             conn = athenaDBConfig.getConnection();
             statement = conn.createStatement();
@@ -46,7 +58,8 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, String> {
         } catch (Exception ex) {
             logger.log("query exceptoin " + ex.getMessage());
             ex.printStackTrace();
-            return "Query Data  exception";
+            athenaResponse.status = "query exceptoin " + ex.getMessage();
+            return  athenaResponse;
         } finally {
             try {
                 if (statement != null)
@@ -63,36 +76,27 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, String> {
             }
         }
 
-
+        athenaResponse.status = "success";
         if(list == null) {
             logger.log("No data return");
-            return  "No data return";
+            return  athenaResponse;
         }
-        JSONObject result =  new JSONObject();
-        result.put("result",list);
-        return result.toString();
+        athenaResponse.result = list;
+        return athenaResponse;
 
     }
 
-    private JSONArray convertToJSON(ResultSet resultSet)
+    private List<ProductSum> convertToJSON(ResultSet resultSet)
             throws Exception {
-        JSONArray json = new JSONArray();
-        ResultSetMetaData rsmd = resultSet.getMetaData();
+        List<ProductSum> productSumList = new ArrayList<>();
         while(resultSet.next()) {
-            int numColumns = rsmd.getColumnCount();
-            JSONObject obj = new JSONObject();
-            for (int i=1; i<=numColumns; i++) {
-                String column_name = rsmd.getColumnName(i);
-                Object value = resultSet.getObject(column_name);
-                System.out.println(value);
-                if( value != null) {
-                    obj.put(column_name, resultSet.getObject(column_name));
-                }
-            }
+            ProductSum productSum = new ProductSum();
+            productSum.product = resultSet.getString("product");
+            productSum.total = resultSet.getInt("total");
+            productSumList.add(productSum);
 
-            json.put(obj);
         }
-        return json;
+        return productSumList;
     }
 
     private boolean isRequiredValid(AthenaRequest request) {
