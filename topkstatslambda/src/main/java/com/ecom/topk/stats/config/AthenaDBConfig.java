@@ -40,7 +40,7 @@ public class AthenaDBConfig {
          conn = DriverManager.getConnection(jdbc_url, info);
          return conn;
      }
-     public  String generateStatement(String startDate, String endDate, String k) {
+     public  String generateStatement(String startDate, String endDate, int k) {
          Formatter formatter = new Formatter();
          String sql = formatter.format(query_sql, dbName,tableName,startDate,endDate,k).toString();
          return sql;

@@ -1,7 +1,7 @@
 package com.ecom.salesorder.model;
 
 public class SalesOrderModel {
-     private String order_id;
+    private String order_id;
 
     private String updated_at;
 
@@ -10,7 +10,9 @@ public class SalesOrderModel {
     private String created_at;
 
     private int quantity;
+    public  SalesOrderModel() {
 
+    }
     public SalesOrderModel(String order_id, String updated_at, String product, String created_at, int quantity) {
         this.order_id = order_id;
         this.updated_at = updated_at;

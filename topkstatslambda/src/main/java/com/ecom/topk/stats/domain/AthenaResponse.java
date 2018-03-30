@@ -1,20 +1,13 @@
 package com.ecom.topk.stats.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.json.JSONArray;
-
+import lombok.Builder;
+import lombok.Data;
 import java.util.List;
 
+@Data
+@Builder
 public class AthenaResponse {
-    @Getter
-    @Setter
-    public String status;
-
-    @Getter
-    @Setter
-    public List<ProductSum> result;
-
-
+    private String status;
+    private  List<ProductSum> result;
 
 }

@@ -8,13 +8,10 @@ import com.ecom.topk.stats.domain.AthenaResponse;
 import com.ecom.topk.stats.config.AthenaDBConfig;
 import com.ecom.topk.stats.domain.ProductSum;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +25,13 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, AthenaRespons
     public AthenaResponse handleRequest(AthenaRequest input, Context context) {
         LambdaLogger logger = context.getLogger();
         AthenaDBConfig athenaDBConfig = null;
-        AthenaResponse athenaResponse = new AthenaResponse();
+        AthenaResponse.AthenaResponseBuilder athenaResponseBuilder = AthenaResponse.builder();
         try {
             athenaDBConfig = new AthenaDBConfig();
         } catch (IOException e) {
             logger.log("config file error " + e.getMessage());
-            athenaResponse.status = "DBConnection Error";
-            return  athenaResponse;
+            athenaResponseBuilder.status("DBConnection Error");
+            return  athenaResponseBuilder.build();
         }
         Statement statement = null;
         logger.log(input.toString());
@@ -42,15 +39,16 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, AthenaRespons
         boolean valid = isRequiredValid(input);
 
         if (!valid) {
-            athenaResponse.status =  "Input parameters are not valid. input: " + input;
-            return athenaResponse;
+            athenaResponseBuilder.status("Input parameters are not valid. input: " + input);
+            return athenaResponseBuilder.build();
         }
         Connection conn = null;
         List<ProductSum> list = null;
         try {
             conn = athenaDBConfig.getConnection();
             statement = conn.createStatement();
-            String sql = athenaDBConfig.generateStatement(input.startDate, input.endDate, input.quantity);
+            String sql = athenaDBConfig.generateStatement(input.getStartDate(),
+                    input.getEndDate(), input.getTop());
             logger.log(sql);
             ResultSet rs = statement.executeQuery(sql);
             list = convertToJSON(rs);
@@ -58,8 +56,8 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, AthenaRespons
         } catch (Exception ex) {
             logger.log("query exceptoin " + ex.getMessage());
             ex.printStackTrace();
-            athenaResponse.status = "query exceptoin " + ex.getMessage();
-            return  athenaResponse;
+            athenaResponseBuilder.status("query exceptoin " + ex.getMessage());
+            return  athenaResponseBuilder.build();
         } finally {
             try {
                 if (statement != null)
@@ -76,13 +74,13 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, AthenaRespons
             }
         }
 
-        athenaResponse.status = "success";
+        athenaResponseBuilder.status("success");
         if(list == null) {
             logger.log("No data return");
-            return  athenaResponse;
+            return  athenaResponseBuilder.build();
         }
-        athenaResponse.result = list;
-        return athenaResponse;
+        athenaResponseBuilder.result(list);
+        return athenaResponseBuilder.build();
 
     }
 
@@ -105,15 +103,15 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, AthenaRespons
             return false;
         }
 
-        if (StringUtils.isBlank(request.startDate)) {
+        if (StringUtils.isBlank(request.getStartDate())) {
             return false;
         }
 
-        if (StringUtils.isBlank(request.endDate)) {
+        if (StringUtils.isBlank(request.getEndDate())) {
             return false;
         }
 
-        if (StringUtils.isBlank(request.quantity)) {
+        if (request.getTop() <= 0) {
             return false;
         }
 
