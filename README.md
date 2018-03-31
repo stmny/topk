@@ -1,7 +1,7 @@
 # Top K
 
 ## BluePrint
-
+![Blueprint](https://github.com/stmny/topk/blob/master/blueprint.png)
 ##  SalesOrder RESTful service :
    
    
