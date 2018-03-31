@@ -2,16 +2,28 @@
 
 ## BluePrint
 ![Blueprint](https://github.com/stmny/topk/blob/master/blueprint.png)
+
+##
+   ### 
+    
+    
+   
 ##  SalesOrder RESTful service :
-   
-   
+     
 ### Tech stack :
       Spring boot Restful,
       DynamoDB,
       EC2, 
       Elastic_Beanstalk
       DynamoDB stream 
+      
+##
+   ### 
+    
+    
+        
 ##  DynamoDB Stream Lambda :
+
 ### work flow :  
          .dynamo db change  --> trigger ddb stream --> 
          kinesis firehose handle event --> lambda function --> 
@@ -22,7 +34,11 @@
             lambda
             s3
             athena
-## 3. query  api :
+##
+   ### 
+    
+    
+  ##  Statistic Qeury API :
    
    ### url : https://apigatewayid.execute-api.us-west-2.amazonaws.com/demo/qurey
    
@@ -51,7 +67,7 @@
    }
    
    ### Tech stack
-   Api Gateway 
-   Lambda,
-   Athena
-   S3
+      Api Gateway 
+      Lambda,
+      Athena
+      S3
