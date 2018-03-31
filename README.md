@@ -24,7 +24,7 @@
             athena
 ## 3. query  api :
    
-   ### url : https://e8ju0509wj.execute-api.us-west-2.amazonaws.com/demo/qurey
+   ### url : https://apigatewayid.execute-api.us-west-2.amazonaws.com/demo/qurey
    
    ### method type : post 
    ### request body : 
