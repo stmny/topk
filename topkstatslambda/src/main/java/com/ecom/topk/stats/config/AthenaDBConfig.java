@@ -1,4 +1,4 @@
-package com.ecom.topk.stats;
+package com.ecom.topk.stats.config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,20 +10,24 @@ import java.util.Properties;
 public class AthenaDBConfig {
 
      String region;
-     String url;
+     String jdbc_url;
      String  dbName;
      String tableName;
      String s3_staging_dir;
-     public AthenaDBConfig() throws IOException {
+     String query_sql;
+     String base_url;
+    public AthenaDBConfig() throws IOException {
          InputStream is = AthenaDBConfig.class.getResourceAsStream("/athena.properties");
          Properties properties = new Properties();
          properties.load(is);
          region = properties.getProperty("region");
          Formatter formatter = new Formatter();
-         url =  formatter.format("jdbc:awsathena://athena.%s.amazonaws.com:443", region).toString();
+         base_url = properties.getProperty("base_url");
+         jdbc_url =  formatter.format(base_url, region).toString();
          dbName = properties.getProperty("database");
          tableName = properties.getProperty("table");
          s3_staging_dir = properties.getProperty("s3_staging_dir");
+         query_sql = properties.getProperty("query_sql");
      }
 
      public Connection getConnection() throws Exception {
@@ -33,13 +37,12 @@ public class AthenaDBConfig {
          info.put("aws_credentials_provider_class", "com.amazonaws.auth.PropertiesFileCredentialsProvider");
          info.put("aws_credentials_provider_arguments", "config/credential");
          info.put("s3_staging_dir",s3_staging_dir);
-         conn = DriverManager.getConnection(url, info);
+         conn = DriverManager.getConnection(jdbc_url, info);
          return conn;
      }
-     public  String generateStatement(String startDate, String endDate, String k) {
+     public  String generateStatement(String startDate, String endDate, int k) {
          Formatter formatter = new Formatter();
-         String sql = formatter.format("select product, sum(quantity) as total from %s.%s where updated_at between '%s' AND '%s' " +
-                 "AND product is not null GROUP BY product ORDER BY total DESC limit %s", dbName,tableName,startDate,endDate,k).toString();
+         String sql = formatter.format(query_sql, dbName,tableName,startDate,endDate,k).toString();
          return sql;
      }
 }

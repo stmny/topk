@@ -14,7 +14,7 @@ public class SalesOrder {
 	@DynamoDBHashKey(attributeName = "order_id")
 	private String order_id;
 
-	@DynamoDBRangeKey(attributeName = "updated_-at")
+	@DynamoDBRangeKey(attributeName = "updated_at")
 	private String updated_at;
 
 	@DynamoDBAttribute(attributeName = "product")

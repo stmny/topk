@@ -1,22 +1,17 @@
-package com.ecom.topk.stats;
+package com.ecom.topk.stats.domain;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
+@Getter
+@Setter
 public class AthenaRequest {
-    @Getter
-    @Setter
-    public String startDate;
+    private String startDate;
 
-    @Getter
-    @Setter
-    public String endDate;
+    private String endDate;
 
-    @Getter
-    @Setter
-    public String quantity;
+    private int top;
 
 
     @Override

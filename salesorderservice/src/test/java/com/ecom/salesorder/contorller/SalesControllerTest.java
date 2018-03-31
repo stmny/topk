@@ -2,7 +2,6 @@ package com.ecom.salesorder.contorller;
 
 import com.ecom.salesorder.controller.SalesOrderController;
 import com.ecom.salesorder.entity.SalesOrder;
-import com.ecom.salesorder.model.SalesOrderModel;
 import com.ecom.salesorder.model.SalesOrderReqest;
 import com.ecom.salesorder.model.SalesOrderResponse;
 import com.ecom.salesorder.service.SalesOrderService;
@@ -10,6 +9,8 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -24,7 +25,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class SalesControllerTest {
     private SalesOrderController salesOrderController;
     private SalesOrder salesOrder;
-    private SalesOrderModel salesOrderModel;
+    private SalesOrderReqest salesOrderReqest;
 
     @Mock
     private SalesOrderService salesOrderService;
@@ -43,7 +44,7 @@ public class SalesControllerTest {
         salesOrder.setOrder_id("order_"+ UUID.randomUUID());
         salesOrder.setProduct("Product_"+ new Random().nextInt(10));
 
-        salesOrderModel = new SalesOrderModel(salesOrder.getOrder_id(), salesOrder.getUpdated_at(),
+        salesOrderReqest = new SalesOrderReqest(salesOrder.getOrder_id(), salesOrder.getUpdated_at(),
                 salesOrder.getProduct(),salesOrder.getCreated_at(), salesOrder.getQuantity());
 
     }
@@ -59,9 +60,7 @@ public class SalesControllerTest {
     }
     @Test
     public void saveSalesOrderTest() {
-        SalesOrderReqest salesOrderReqest = new SalesOrderReqest();
-        salesOrderReqest.setSalesOrderModel(salesOrderModel);
-        salesOrderController.saveSalesOrder(salesOrderReqest);
-        assertThat(salesOrder.getQuantity() == salesOrderModel.getQuantity());
+        ResponseEntity<?> response = salesOrderController.saveSalesOrder(salesOrderReqest);
+        assertThat(response.getStatusCode().equals(HttpStatus.OK));
     }
 }

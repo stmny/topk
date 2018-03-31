@@ -1,7 +1,10 @@
 package com.ecom.salesorder.controller;
 
 import com.amazonaws.util.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import com.ecom.salesorder.entity.SalesOrder;
@@ -18,26 +21,27 @@ import static java.util.stream.Collectors.toList;
 @RequestMapping(value = "api")
 @ResponseBody
 public class SalesOrderController {
-
+	Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SalesOrderService salesOrderService;
 
 	public SalesOrderController(SalesOrderService salesOrderService) {
 		this.salesOrderService = salesOrderService;
 	}
 	@PostMapping(value = "/salesorder")
-	public void saveSalesOrder(@RequestBody SalesOrderReqest salesOrderReqest) {
+	public ResponseEntity<?> saveSalesOrder(@RequestBody SalesOrderReqest salesOrderReqest) {
 		SalesOrder salesOrder = convertToSalesOrder(salesOrderReqest);
+		logger.info(salesOrder.toString());
 		salesOrderService.save(salesOrder);
+		return new ResponseEntity<String>("insert success", HttpStatus.OK);
 	}
 
     public SalesOrder convertToSalesOrder(SalesOrderReqest salesOrderReqest) {
 	   SalesOrder salesOrder = new SalesOrder();
-       SalesOrderModel salesOrderModel = salesOrderReqest.getSalesOrderModel();
-	   salesOrder.setProduct(salesOrderModel.getProduct());
-	   salesOrder.setOrder_id(salesOrderModel.getOrder_id());
-	   salesOrder.setUpdated_at(salesOrderModel.getUpdated_at());
-	   salesOrder.setCreated_at(salesOrderModel.getCreated_at());
-	   salesOrder.setQuantity(salesOrderModel.getQuantity());
+       salesOrder.setProduct(salesOrderReqest.getProduct());
+	   salesOrder.setOrder_id(salesOrderReqest.getOrder_id());
+	   salesOrder.setUpdated_at(salesOrderReqest.getUpdated_at());
+	   salesOrder.setCreated_at(salesOrderReqest.getCreated_at());
+	   salesOrder.setQuantity(salesOrderReqest.getQuantity());
 	   return salesOrder;
     }
 

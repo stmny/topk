@@ -1,16 +1,29 @@
 package com.ecom.salesorder.model;
 
-import javax.validation.constraints.NotNull;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class SalesOrderReqest {
-    @NotNull
-    private SalesOrderModel salesOrderModel;
+    private String order_id;
 
-    public SalesOrderModel getSalesOrderModel() {
-        return salesOrderModel;
-    }
+    private String updated_at;
 
-    public void setSalesOrderModel(SalesOrderModel salesOrderModel) {
-        this.salesOrderModel = salesOrderModel;
+    private String product;
+
+    private String created_at;
+
+    private int quantity;
+
+    public  SalesOrderReqest() {
+
     }
-}
+    public SalesOrderReqest(String order_id, String updated_at, String product, String created_at, int quantity) {
+        this.order_id = order_id;
+        this.updated_at = updated_at;
+        this.product = product;
+        this.created_at = created_at;
+        this.quantity = quantity;
+    }}
