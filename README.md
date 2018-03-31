@@ -1,11 +1,11 @@
-# topk
+# Top K
 
 ## BluePrint
 
 ##  SalesOrder RESTful service :
    
    
-   ###Tech stack :
+### Tech stack :
       Spring boot Restful,
       DynamoDB,
       EC2, 
@@ -16,7 +16,7 @@
          .dynamo db change  --> trigger ddb stream --> 
          kinesis firehose handle event --> lambda function --> 
          store data to  S3 -->AWS Glue category crawler --->athena  table
-###Tech stack :
+### Tech stack :
             ddb stream,
             kinesis firehose
             lambda
