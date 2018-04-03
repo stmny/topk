@@ -1,7 +1,9 @@
 package com.ecom.salesorder.config;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
@@ -16,15 +18,9 @@ public class DynamoDBConfig {
 	@Value("${amazon.dynamodb.endpoint}")
 	private String dBEndpoint;
 
-	@Value("${amazon.aws.accesskey}")
-	private String accessKey;
-
-	@Value("${amazon.aws.secretkey}")
-	private String secretKey;
-
 	@Bean
 	public AmazonDynamoDB amazonDynamoDB() {
-		AmazonDynamoDB dynamoDB = new AmazonDynamoDBClient(amazonAWSCredentials());
+		AmazonDynamoDB dynamoDB = new AmazonDynamoDBClient(awsCredentialsProviderChain());
 
 		if (!StringUtils.isNullOrEmpty(dBEndpoint)) {
 			dynamoDB.setEndpoint(dBEndpoint);
@@ -34,8 +30,15 @@ public class DynamoDBConfig {
 	}
 
 	@Bean
-	public AWSCredentials amazonAWSCredentials() {
-		return new BasicAWSCredentials(accessKey, secretKey);
+	public AWSCredentialsProviderChain awsCredentialsProviderChain() {
+		AWSCredentialsProviderChain credentialsProvider;
+		try {
+			credentialsProvider = new DefaultAWSCredentialsProviderChain();
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Error loading credentials", e);
+		}
+		return credentialsProvider;
 	}
 
 	@Bean
