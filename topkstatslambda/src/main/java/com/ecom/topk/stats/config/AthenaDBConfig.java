@@ -1,5 +1,8 @@
 package com.ecom.topk.stats.config;
 
+import com.amazonaws.auth.AWSCredentialsProviderChain;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -34,10 +37,11 @@ public class AthenaDBConfig {
          Connection conn = null;
          Class.forName("com.amazonaws.athena.jdbc.AthenaDriver");
          Properties info = new Properties();
-         info.put("aws_credentials_provider_class", "com.amazonaws.auth.PropertiesFileCredentialsProvider");
-         info.put("aws_credentials_provider_arguments", "config/credential");
+         info.put("aws_credentials_provider_class", "com.amazonaws.auth.DefaultAWSCredentialsProviderChain");
+         info.put("aws_credentials_provider_arguments", awsCredentialsProviderChain());
          info.put("s3_staging_dir",s3_staging_dir);
          conn = DriverManager.getConnection(jdbc_url, info);
+
          return conn;
      }
      public  String generateStatement(String startDate, String endDate, int k) {
@@ -45,5 +49,15 @@ public class AthenaDBConfig {
          String sql = formatter.format(query_sql, dbName,tableName,startDate,endDate,k).toString();
          return sql;
      }
+    public AWSCredentialsProviderChain awsCredentialsProviderChain() {
+        AWSCredentialsProviderChain credentialsProvider;
+        try {
+            credentialsProvider = new DefaultAWSCredentialsProviderChain();
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Error loading credentials", e);
+        }
+        return credentialsProvider;
+    }
 }
 
