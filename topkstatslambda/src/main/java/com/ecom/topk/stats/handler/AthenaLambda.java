@@ -1,5 +1,6 @@
 package com.ecom.topk.stats.handler;
 
+import com.amazonaws.services.glue.AWSGlueClient;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -23,6 +24,7 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, AthenaRespons
     }
 
     public AthenaResponse handleRequest(AthenaRequest input, Context context) {
+
         LambdaLogger logger = context.getLogger();
         AthenaDBConfig athenaDBConfig = null;
         AthenaResponse.AthenaResponseBuilder athenaResponseBuilder = AthenaResponse.builder();
@@ -33,6 +35,7 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, AthenaRespons
             athenaResponseBuilder.status("DBConnection Error");
             return  athenaResponseBuilder.build();
         }
+       // athenaDBConfig.runCrawler();
         Statement statement = null;
         logger.log(input.toString());
 
@@ -83,6 +86,8 @@ public class AthenaLambda implements RequestHandler<AthenaRequest, AthenaRespons
         return athenaResponseBuilder.build();
 
     }
+
+
 
     private List<ProductSum> convertToJSON(ResultSet resultSet)
             throws Exception {

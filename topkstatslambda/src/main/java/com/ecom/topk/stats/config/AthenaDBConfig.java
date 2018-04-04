@@ -2,6 +2,10 @@ package com.ecom.topk.stats.config;
 
 import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.services.glue.AWSGlue;
+import com.amazonaws.services.glue.AWSGlueClient;
+import com.amazonaws.services.glue.AWSGlueClientBuilder;
+import com.amazonaws.services.glue.model.StartCrawlerRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +23,8 @@ public class AthenaDBConfig {
      String s3_staging_dir;
      String query_sql;
      String base_url;
+     String crawler_name;
+    AWSGlue awsGlueClient;
     public AthenaDBConfig() throws IOException {
          InputStream is = AthenaDBConfig.class.getResourceAsStream("/athena.properties");
          Properties properties = new Properties();
@@ -31,7 +37,10 @@ public class AthenaDBConfig {
          tableName = properties.getProperty("table");
          s3_staging_dir = properties.getProperty("s3_staging_dir");
          query_sql = properties.getProperty("query_sql");
-     }
+         crawler_name = properties.getProperty("crawler_name");
+         awsGlueClient = getAWSGlueClient();
+
+    }
 
      public Connection getConnection() throws Exception {
          Connection conn = null;
@@ -58,6 +67,14 @@ public class AthenaDBConfig {
             throw new RuntimeException("Error loading credentials", e);
         }
         return credentialsProvider;
+    }
+    public  void runCrawler() {
+        StartCrawlerRequest startCrawlerRequest =  new StartCrawlerRequest();
+        startCrawlerRequest.setName(crawler_name);
+        awsGlueClient.startCrawler(startCrawlerRequest);
+    }
+    public AWSGlue getAWSGlueClient() {
+        return  AWSGlueClientBuilder.standard().withRegion("glue.us-west-2.amazonaws.com").build();
     }
 }
 
