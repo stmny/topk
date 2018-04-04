@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>
-            <version>1.11.69</version>
+            <version>1.11.308</version>
             <exclusions>
                 <exclusion>
                     <artifactId>ion-java</artifactId>
@@ -45,12 +45,6 @@
             <version>20180130</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-glue -->
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-glue</artifactId>
-            <version>1.11.307</version>
-        </dependency>
 
         <!--
        From lib directory:

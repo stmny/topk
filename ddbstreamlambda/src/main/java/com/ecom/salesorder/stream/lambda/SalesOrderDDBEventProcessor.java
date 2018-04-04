@@ -33,6 +33,12 @@ public class SalesOrderDDBEventProcessor implements
         AmazonKinesisFirehose firehoseClient = AmazonKinesisFirehoseClientBuilder.standard().build();
         List<Item> listOfItem = new ArrayList<>();
         List<Map<String, AttributeValue>> listOfMaps = null;
+        if(ddbEvent == null) {
+            return ("ddbevent is njull");
+        }
+        if(ddbEvent.getRecords() == null){
+            return ("ddbEvent.getRecords() is null");
+        }
         logger.log(" processed " + ddbEvent.getRecords().size() + " records. ");
         for (DynamodbEvent.DynamodbStreamRecord record : ddbEvent.getRecords()) {
             logger.log(record.toString());
@@ -54,7 +60,8 @@ public class SalesOrderDDBEventProcessor implements
         putRecordBatchRequest.setRecords(recordList);
 
         firehoseClient.putRecordBatch(putRecordBatchRequest);
-
+        SalesOrderGlueCrawler salesOrderGlueCrawler = new SalesOrderGlueCrawler();
+        salesOrderGlueCrawler.runCrawler();
         recordList.clear();
 
         return "Successfully processed " + ddbEvent.getRecords().size() + " records.";
